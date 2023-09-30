@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS widgets;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS transaction_statuses;
+DROP TABLE IF EXISTS transactions;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS customers;
+DROP TABLE IF EXISTS statuses;
+ALTER TABLE orders DROP CONSTRAINT `fk_customer_id`;

@@ -1,0 +1,66 @@
+version: "3.8"
+
+services:
+  stripe_frontend:
+    container_name: stripe_frontend
+    build: 
+      context: .
+      dockerfile: cmd/web/Dockerfile
+    working_dir: /app
+    env_file:
+      - ./cmd/web/.env
+    ports:
+      - "4000:4000"
+    volumes:
+      - .:/app
+    depends_on:
+      - maria_db
+      
+  stripe_backend:
+    container_name: stripe_backend
+    build: 
+      context: .
+      dockerfile: cmd/api/Dockerfile
+    working_dir: /app
+    env_file:
+      - ./cmd/api/.env
+    ports:
+      - "4001:4001"
+    volumes:
+      - .:/app
+    depends_on:
+      - maria_db
+  
+  maria_db:
+    container_name: maria_db
+    image: mariadb
+    working_dir: /db
+    restart: always
+    volumes:
+      - db:/db
+    env_file:
+      - .env
+  migrate:
+    container_name: migrate
+    image: migrate/migrate
+    env_file:
+      - ./.env
+    volumes:
+      - ./database/migration:/migration
+    entrypoint:
+      [
+        "migrate",
+        "-path",
+        "/migration/",
+        "-database",
+        "$DATABASE_URL",
+        "-verbose"
+      ]
+    command: ["up"]
+    depends_on:
+      - maria_db
+    restart: on-failure
+
+volumes:
+  db:
+    
